@@ -1,6 +1,0 @@
-size: 10, time: 0.0033585
-size: 100, time: 0.0890225
-size: 200, time: 0.475521
-size: 500, time: 6.16675
-size: 800, time: 23.5242
-size: 1000, time: 48.6758
