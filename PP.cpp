@@ -140,6 +140,21 @@ void experiments_lab1(const std::vector<size_t>& sizes) {
 	file.close();
 }
 
+void experiments_lab1(const std::vector<size_t>& sizes) {
+	std::ofstream file("../../../lab1/results_lab1.txt");
+	if (!file.is_open())
+		throw std::invalid_argument("Can't open file results_lab1.txt");
+	for (size_t size : sizes) {
+		Matrix A(size, size, 1);
+		Matrix B(size, size, 1);
+		A.save_to_file("A");
+		B.save_to_file("B");
+		multiply(A, B).save_to_file("multiplyed");
+		file << "size: " << size << ", time: " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << std::endl;
+	}
+	file.close();
+}
+
 int main()
 {
 	srand(time(NULL));
