@@ -1,13 +1,13 @@
-﻿// PP.cpp: определяет точку входа для приложения.
-//
-
-#include "PP.h"
+﻿#include <iostream>
 #include <vector>
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <filesystem>
+
+
+std::chrono::steady_clock::time_point start, end;
 
 
 struct seed_t
@@ -69,9 +69,10 @@ public:
 	}
 
 	void save_to_file(const std::string& filename) const {
-		if(!std::filesystem::exists("../../../lab1/matrix&muls/" + std::to_string(data.size())))
-			std::filesystem::create_directories("../../../lab1/matrix&muls/" + std::to_string(data.size()));
-		std::ofstream file("../../../lab1/matrix&muls/" + std::to_string(data.size()) + "/" + filename + ".txt");
+		
+		if(!std::filesystem::exists("../../../matrix&muls/" + std::to_string(data.size())))
+			std::filesystem::create_directories("../../../matrix&muls/" + std::to_string(data.size()));
+		std::ofstream file("../../../matrix&muls/" + std::to_string(data.size()) + "/" + filename + ".txt");
 		if (file.is_open()) {
 			for (const auto& col : data) {
 				for (const auto& value : col) {
@@ -88,6 +89,7 @@ public:
 };
 
 Matrix multiply(const Matrix& first, const Matrix& second) {
+	start = std::chrono::high_resolution_clock::now();
 	if (first.cols() != second.rows()) {
 		throw std::invalid_argument("The number of columns of matrix A does not match the number of rows of matrix B");
 	}
@@ -100,6 +102,7 @@ Matrix multiply(const Matrix& first, const Matrix& second) {
 			}
 		}
 	}
+	end = std::chrono::high_resolution_clock::now();
 	return result;
 }
 
@@ -110,7 +113,7 @@ Matrix load_from_file(const std::string& filename) {
 		Matrix matrix(rows, cols);
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
-				file >> matrix.at(i, j); // Считываем элементы матрицы
+				file >> matrix.at(i, j);
 			}
 		}
 		file.close();
@@ -118,12 +121,12 @@ Matrix load_from_file(const std::string& filename) {
 	}
 	else {
 		throw std::invalid_argument("Can't load from file");
-		return Matrix(0, 0); // Возвращаем пустую матрицу
+		return Matrix(0, 0);
 	}
 }
 
-void experiments(const std::vector<size_t>& sizes) {
-	std::ofstream file("../../../results_lab1.txt");
+void experiments_lab1(const std::vector<size_t>& sizes) {
+	std::ofstream file("../../../lab1/results_lab1.txt");
 	if (!file.is_open())
 		throw std::invalid_argument("Can't open file results_lab1.txt");
 	for (size_t size : sizes) {
@@ -131,9 +134,8 @@ void experiments(const std::vector<size_t>& sizes) {
 		Matrix B(size, size, 1);
 		A.save_to_file("A");
 		B.save_to_file("B");
-		auto start = std::chrono::high_resolution_clock::now();
-		multiply(A, B).save_to_file("multyplyed");
-		file << "size: " << size << ", time: " << std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
+		multiply(A, B).save_to_file("multiplyed");
+		file << "size: " << size << ", time: " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << std::endl;
 	}
 	file.close();
 }
@@ -142,9 +144,6 @@ int main()
 {
 	srand(time(NULL));
 	std::vector<size_t> sizes = {10, 100, 200, 500, 800, 1000, 1500, 2000};
-	experiments(sizes);
-	
-
-	//multiply(matr, matr1).print();
+	experiments_lab1(sizes);
 	return 0;
 }
