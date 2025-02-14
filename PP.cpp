@@ -70,9 +70,9 @@ public:
 
 	void save_to_file(const std::string& filename) const {
 		
-		if(!std::filesystem::exists("../../../lab1/matrix&muls/" + std::to_string(data.size())))
-			std::filesystem::create_directories("../../../lab1/matrix&muls/" + std::to_string(data.size()));
-		std::ofstream file("../../../lab1/matrix&muls/" + std::to_string(data.size()) + "/" + filename + ".txt");
+		if(!std::filesystem::exists("../../../matrix&muls/" + std::to_string(data.size())))
+			std::filesystem::create_directories("../../../matrix&muls/" + std::to_string(data.size()));
+		std::ofstream file("../../../matrix&muls/" + std::to_string(data.size()) + "/" + filename + ".txt");
 		if (file.is_open()) {
 			for (const auto& col : data) {
 				for (const auto& value : col) {
