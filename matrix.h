@@ -99,4 +99,24 @@ public:
 			throw std::invalid_argument("Can't save to file");
 		}
 	}
+	void save_to_file_lab2(const std::string& filename, size_t num_threads) const {
+
+		if (!std::filesystem::exists("../../../lab2/matrix&muls&results/" + std::to_string(data.size())))
+			std::filesystem::create_directories("../../../lab2/matrix&muls&results/" + std::to_string(data.size()));
+		if (!std::filesystem::exists("../../../lab2/matrix&muls&results/" + std::to_string(data.size()) + "/threads_" + std::to_string(num_threads)))
+			std::filesystem::create_directories("../../../lab2/matrix&muls&results/" + std::to_string(data.size()) + "/threads_" + std::to_string(num_threads));
+		std::ofstream file("../../../lab2/matrix&muls&results/" + std::to_string(data.size()) + "/threads_" + std::to_string(num_threads) + "/" + filename + ".txt");
+		if (file.is_open()) {
+			for (const auto& col : data) {
+				for (const auto& value : col) {
+					file << value << " ";
+				}
+				file << std::endl;
+			}
+			file.close();
+		}
+		else {
+			throw std::invalid_argument("Can't save to file");
+		}
+	}
 };

@@ -2,35 +2,35 @@
 
 #include <omp.h>
 
-std::chrono::steady_clock::time_point start, end;
-
+double start, end;
 
 Matrix mul_with_OMP(const Matrix& first, const Matrix& second)
 {
-	start = std::chrono::high_resolution_clock::now();
+	start = omp_get_wtime();
 	if (first.cols() != second.rows()) {
 		throw std::invalid_argument("The number of columns of matrix A does not match the number of rows of matrix B");
 	}
 	double start = omp_get_wtime();
 	Matrix result(first.rows(), second.cols());
 	int i = 0, j = 0, k = 0;
-	//omp_set_num_threads(12);
-	std::cout << omp_get_num_threads() << " ";
-#pragma omp parallel for shared(first, second, result) private(int i, int j, int k)
-	for (i = 0; i < second.rows(); i++)
+#pragma omp parallel  shared(first, second, result) private( i,  j,  k)
 	{
-		for (j = 0; j < first.cols(); j++)
-		{
-			result.at(i, j) = 0;
-			for (k = 0; k < first.cols(); k++)
+#pragma omp for 
+			for (i = 0; i < second.rows(); i++)
 			{
-				result.at(i, j) += first.at(i, k) * second.at(k, j);
-			}
+				for (j = 0; j < first.cols(); j++)
+				{
+					result.at(i, j) = 0;
+					for (k = 0; k < first.cols(); k++)
+					{
+						result.at(i, j) += first.at(i, k) * second.at(k, j);
+					}
 
-		}
+				}
+			}
 	}
 	std::cout << "time: " << omp_get_wtime() - start << std::endl;
-	end = std::chrono::high_resolution_clock::now();
+	end = omp_get_wtime();
 	return result;
 }
 
@@ -53,17 +53,27 @@ Matrix load_from_file(const std::string& filename) {
 	}
 }
 
-void experiments_lab2(const std::vector<size_t>& sizes) {
+void experiments_lab2(const std::vector<size_t>& sizes, const std::vector<size_t>& threads) {
+
 	std::ofstream file("../../../lab2/results_lab2.txt");
 	if (!file.is_open())
 		throw std::invalid_argument("Can't open file results_lab2.txt");
 	for (size_t size : sizes) {
+		std::vector<size_t> times;
 		Matrix A(size, size, 1);
 		Matrix B(size, size, 1);
 		A.save_to_file_lab2("A");
 		B.save_to_file_lab2("B");
-		mul_with_OMP(A, B).save_to_file_lab2("multiplyed");
-		file << "size: " << size << ", time: " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << std::endl;
+		file << "size: " << size;
+		for (size_t thread : threads) {
+			omp_set_num_threads(thread);
+			file << "\n\tthreads: " << thread << ", times: ";
+			for (size_t i = 0; i < 10; ++i) {
+				mul_with_OMP(A, B).save_to_file_lab2("multiplyed", thread);
+				 file << end - start << ", ";
+			}
+		}
+		file << std::endl;
 	}
 	file.close();
 }
@@ -71,7 +81,8 @@ void experiments_lab2(const std::vector<size_t>& sizes) {
 int main()
 {
 	srand(time(NULL));
-	std::vector<size_t> sizes = {10, 100, 200, 500, 800, 1000, 1500, 2000};
-	experiments_lab2(sizes);
+	std::vector<size_t> sizes = {10, 100, 200, 500, 800, 1000, 1500};
+	std::vector<size_t> threads = { 1, 2, 4, 6, 8, 10, 12, 14, 16 };
+	experiments_lab2(sizes, threads);
 	return 0;
 }
