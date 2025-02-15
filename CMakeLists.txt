@@ -18,10 +18,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_FLAG}")
 project ("PP")
 
 # Добавьте источник в исполняемый файл этого проекта.
-add_executable (PP "PP.cpp" )
+add_executable (lab1 "lab1.cpp" "matrix.h")
+add_executable (lab2 "lab2.cpp" "matrix.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET PP PROPERTY CXX_STANDARD 20)
+  set_property(TARGET lab1 lab2 PROPERTY CXX_STANDARD 20)
 endif()
 
 # TODO: Добавьте тесты и целевые объекты, если это необходимо.
