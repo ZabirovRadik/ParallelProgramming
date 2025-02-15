@@ -1,0 +1,4 @@
+size: 10, time: 0.0007044
+size: 100, time: 0.0373716
+size: 200, time: 0.261255
+size: 500, time: 4.03306
