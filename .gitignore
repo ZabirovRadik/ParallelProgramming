@@ -15,6 +15,9 @@
 
 # Mono auto generated files
 mono_crash.*
+.idea
+cmake-build-debug-visual-studio
+cmake-build-debug-mingw
 
 # Build results
 [Dd]ebug/
